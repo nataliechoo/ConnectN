@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0EB1AB6F264F89BC00F441CA"
-               BuildableName = "Project 3"
+               BuildableName = "Connect N"
                BlueprintName = "Connect N"
                ReferencedContainer = "container:Connect N.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0EB1AB6F264F89BC00F441CA"
-            BuildableName = "Project 3"
+            BuildableName = "Connect N"
             BlueprintName = "Connect N"
             ReferencedContainer = "container:Connect N.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0EB1AB6F264F89BC00F441CA"
-            BuildableName = "Project 3"
+            BuildableName = "Connect N"
             BlueprintName = "Connect N"
             ReferencedContainer = "container:Connect N.xcodeproj">
          </BuildableReference>
