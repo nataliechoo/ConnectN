@@ -1,0 +1,141 @@
+Natalie Choo
+CS32 Professor Smallberg
+005570330
+
+Descriptions:
+Scaffold utilizes a 2D vector to create a grid. All elements in this grid are either ' ', 'R', or 'B'. With this, all functions that utilize Scaffold will read and understand the board based on those characters. Scaffold also utilizes a stack of ints that represent moves. With these stored moves, the board will know which column the last move was made in, allowing it to appropriately remove that move with the undoMove() function.
+
+SmartPlayer utilizes a struct called mInfo. mInfo holds two ints, one representing the column of the move, and another representing the score of that move. SmartPlayer rates a current board state utilizing findWinner and minimax. These two functions work together to rate the board state, and find the best score of the potential moves. Determine best move uses minimax (which in turn also uses findWinner) to find the best of all moves according to the color of the current player. These functions utilize mInfo to more cleanly store data. 
+
+HumanPlayer simply chooses a human move based on input. When invalid moves are made, it will re-prompt for valid ones and will not return a move until it is valid.
+
+BadPlayer will always try to make a move in the left most column, if it has space. If it does not have room, it will try to move in the next left-most column.
+
+Game utilizes a scaffold, two players, a winner, a lastMove int, a stack of ints, and a lastValue int. The two player types are chosen based on parameters and a game is only created when it is given a valid N and if the scaffold's parameters are valid. The winner is assigned a value when the game is completed. The lastMove int is used to remember the column of the last move made, this makes finding a win pattern in completed() more simple. lastValue is used along with lastMove in completed() to see check for consecutive identical values in game's scaffold. The stack of ints, turns, is used to keep track of the last color played. With this, the game will know whose turn is next. 
+
+SmartPlayer::chooseMove:
+chooseMove() creates a copy of scaffold and passes it into determineBestMove(), which utilizes both findWinner and minimax to determine the best move to make based on a rating system. The rating system determines the game state at any given turn, and evaluates an appropriate score for it depending on who the player is. determineBestMove() finds the move that has the best rating, then returns it so that chooseMove() selects it.
+
+Bugs, problems, etc:
+Note: I probably re-did smartPlayer at least 3 times
+On my first version of smartPlayer I created a determineBestComputerMove() and determineBestHumanMove() function. However, I could not appropriately store my evaluations and my rating function (before I made minimax and findWinner) was very buggy so it my SmartPlayer was very dumb. Eventually, I scrapped this entirely. Then, I recreated these functions with better storage (a smaller vector that only held some evaluations) and updated my rating function. Then, things would work for almost the entire game, but I would always have glitches in the last few turns, as my Computer and Human would not recognize a finished game, and would play out longer and would miss opportunities to win/block each other. Then, I scrapped this version as well and instead created minimax and a new rating function, findWinner. findWinner worked much more smoothly and minimax used it very well so that there were few bugs. However, it is still slow at times. I also used determineBestMove() which used both minimax and findWinner. After re-creating my rating function so many times, my findWinner function was much better and thus, allowed my SmartPlayer to finally make smart moves. I also ran into many bugs even after that. I noticed that my SmartPlayer in terms of implementation and conceptually should have been working perfectly, but was creating weird results. Then, I realized that my undoMove() function was bugged, which messed up smartPlayer's rating system. After fixing that, smartPlayer worked as expected. 
+
+Pseudocode:
+
+ScaffoldImpl::ScaffoldImpl(int nColumns, int nLevels)
+{
+Make sure that parameters are valid. If not, exit.
+
+Assign the dimensions of the scaffold to member variables
+
+Generate a grid of the right dimensions. It should be filled with ' '
+
+}
+
+int ScaffoldImpl::checkerAt(int column, int level) const
+{
+Ensure that the parameters are valid. If they are invalid, return VACANT
+
+If they are valid, 
+If the given position has a 'R', return RED
+If the given position has a 'B', return BLACK
+If the given position has a ' ', return VACANT
+}
+
+void ScaffoldImpl::display() const
+{
+Print a grid so that it has | | around every column 
+If there grid has an empty ' ', print it
+If the grid has an 'R', print it
+If the grid has a 'B', print it
+
+Then, print + under each | and a _ under and between each | | 
+
+}
+
+
+bool ScaffoldImpl::makeMove(int column, int color)
+{
+If the move is valid and the desired spot is empty, place a 'R' or 'B' in that space according to input
+Add to the moves stack
+Return true if a move was made
+If not return false
+}
+
+int ScaffoldImpl::undoMove()
+{
+Look at the top of the stack if it is not empty. If it is empty, do nothing
+
+Find the top element at the column returned from the top of the stack, replace it with an ' '. 
+Pop the top of the stack and return the column of the move removed
+}
+
+bool GameImpl::completed(int& winner) const
+{
+Using the location of the last move made, look in all directions (except up) around it for matching items.
+If the items match, add to a counter of matching items.
+
+If the number of consecutive matching items in a given direction is equal to the goal N of the game, then set the winner to the correct winner and return true.
+
+If the function has not returned after checking all directions, check if the number of empty spaces == 0. If it is 0, then set winner to TIE_GAME and return true
+
+If the function still has not returned, do not alter winner and return false
+}
+
+bool GameImpl::takeTurn()
+{
+If it is red's turn,
+Check if the game is over
+If it is incomplete, make a move for red and re-assign lastMove and lastValue accordingly. Also push RED onto the turns stack
+Return true
+
+If it is black's turn
+Check if the game is over 
+If it is incomplete, 
+Store black's move and value into lastMove and lastValue and push the turn onto the stack. Make its move and return true
+}
+
+int SmartPlayerImpl::findWinner(Scaffold s, int N, int lastCol)
+{
+For each element of the scaffold, look in all directions (except up) for matching items.
+If the items match, add to a counter of matching items.
+There should be a counter for black and red elements, and both should be added to only when their respective elements are found.
+
+If the number of consecutive matching items in a given direction is equal to the goal N of the game, then return the color whose counter got a win
+
+If the function has not returned after checking all directions, check if the number of empty spaces == 0. If it is 0, then return a TIE_GAME
+
+If the function still has not returned, the game is unfinished so return 3333 to indicate an unfinished game
+}
+
+int SmartPlayerImpl::minimax(Scaffold& s, int color, int N, int depth, int lastCol)
+{
+Call find winner on the current board
+If the returned value isn't 3333 (indicating a finished game), return a score that represents that winner's victory
+
+Create a variable that holds the best score for a given player
+For a black player, make a move. If its valid, then update idealScore to be the minimum between our current idealScore and a recursive call to this function, with the current board state passed in.
+
+Undo the move if it was made
+Return the best score
+
+For a red player, make a move, if it is valid, find update ideal score to choose between the highest score of the current best score, and a recursive call to this function with the current board state as a parameter.
+Undo the move and return the best score
+}
+
+SmartPlayerImpl::mInfo SmartPlayerImpl::determineBestMove(Scaffold &s, int color, int N)
+{
+Create a variable of mInfo to hold the best move and its score
+Create another variable of mInfo to hold the current experimental move and its score
+Initialize this variable appropriately according to the player's color
+For every column:
+And for whichever color is the one passed in:
+Make a move
+If that move is valid, update our current variable to hold the move and its score (determined with minimax)
+
+Compare current's score to best's score,
+If this move is for a black player, update best to have current's values if current is smaller
+If this move is for a red player, update best to have current's values if current is larger 
+
+Undo the move to return the board to its original state
+}
